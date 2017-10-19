@@ -1,6 +1,7 @@
 package robert.com.demo.staggered.staggeredlayoutdemo;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -15,21 +16,22 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
  * Created by robert on 10/19/17.
  */
 public class StaggeredAdapter extends RecyclerView.Adapter<StaggeredAdapter.ViewHolder> {
-    private int[] mHeight;
-    private String[] mDataSet;
+    private String TAG = "StaggeredAdapter";
+    private List<StaggeredEntity> mData = new ArrayList<>();
     private Context mContext;
     private Random mRandom = new Random();
 
-    public StaggeredAdapter(Context context, String[] DataSet, int[] mHeight) {
+    public StaggeredAdapter(Context context, List<StaggeredEntity> mData) {
         this.mContext = context;
-        this.mDataSet = DataSet;
-        this.mHeight = mHeight;
+        this.mData = mData;
 
     }
 
@@ -56,13 +58,22 @@ public class StaggeredAdapter extends RecyclerView.Adapter<StaggeredAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-
+        final StaggeredEntity item = getItem(position);
         // Set a random height for TextView
-        holder.mCardView.getLayoutParams().height = mHeight[position];//getRandomIntInRange(250, 75);
+        holder.mCardView.getLayoutParams().height = item.height;//getRandomIntInRange(250, 75);
+
         // Set a random color for TextView background
         holder.mCardView.setBackgroundColor(getRandomHSVColor());
 
-        Log.i("StaggeredAdapter", mDataSet[position] + "|pos=" + position + "|AdapterPos="
+        /*if (item.visible && item.text == SpacesItemDecoration.ALIGNMENT.RIGHT) {
+            holder.mTxtRobert.setVisibility(View.GONE);
+            holder.mTxtHoang.setVisibility(View.VISIBLE);
+        } else {
+            holder.mTxtHoang.setVisibility(View.GONE);
+            holder.mTxtRobert.setVisibility(View.VISIBLE);
+        }*/
+
+        Log.i(TAG, mData.get(position).text + "|pos=" + position + "|AdapterPos="
                 + holder.getAdapterPosition() + "|LayoutPos=" + holder.getLayoutPosition()
                 + "|ItemId=" + holder.getItemId());
 
@@ -79,16 +90,48 @@ public class StaggeredAdapter extends RecyclerView.Adapter<StaggeredAdapter.View
         int y = originalPos[1];
 
         //RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams)holder.itemView.getLayoutParams();
-        //Log.e("StaggeredAdapter", "-->lp.viewNeedsUpdate()=" + lp.viewNeedsUpdate());
+        //Log.e(TAG, "-->lp.viewNeedsUpdate()=" + lp.viewNeedsUpdate());
         StaggeredGridLayoutManager.LayoutParams lp1 = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
-        Log.e("StaggeredAdapter", "-->lp.getSpanIndex()=" + lp1.getSpanIndex());
-        Log.e("StaggeredAdapter", "------------------------------------------------------");
+        Log.e(TAG, "-->lp.getSpanIndex()=" + lp1.getSpanIndex());
+        Log.e(TAG, "------------------------------------------------------");
 
+    }
+
+    public void update(int position, int spanIndex, SpacesItemDecoration.ALIGNMENT alignment) {
+        Log.e(TAG, "readyUpdate().position=" + position + "|spanIndex=" + spanIndex + "|alignment=" + alignment);
+        mData.get(position).text = alignment;
+        mData.get(position).spanIndex = spanIndex;
+        mData.get(position).visible = (position > 0 && spanIndex == 1 ? true : false);
+        /*try {
+            synchronized (this) {
+                wait(500);
+
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+                });
+
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+
+    }
+
+    public StaggeredEntity getItem(int position) {
+        return mData.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return mDataSet.length;
+        return mData.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return super.getItemId(position);
     }
 
     // Custom method to get a random number between a range

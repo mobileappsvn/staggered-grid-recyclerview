@@ -10,16 +10,37 @@ import android.view.View;
  * Created by robert on 10/19/17.
  */
 public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
-    private final int mSpace;
+    private String TAG = "SpacesItemDecoration";
+    public enum ALIGN {
+        LEFT(0), RIGHT(1);
+        private int value;
 
-    public SpacesItemDecoration(int space) {
+        ALIGN(int value) {
+            this.value = value;
+        }
+    }
+
+    public enum ALIGNMENT {
+        LEFT,
+        RIGHT;
+    }
+
+    public interface AlignmentDetect {
+        void readyUpdate(int position, int spanIndex, ALIGNMENT alignment);
+    }
+
+    private final int mSpace;
+    AlignmentDetect mAlignmentDetectListener;
+
+    public SpacesItemDecoration(int space, AlignmentDetect mAlignmentDetectListener) {
         this.mSpace = space;
+        this.mAlignmentDetectListener = mAlignmentDetectListener;
     }
 
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
 
-        Log.e("SpacesItemDecoration", "-->view.getClass().getSimpleName()=" + view.getClass().getSimpleName() + "-->getParent=" + parent.getParent().getClass().getSimpleName());
+        Log.e(TAG, "-->view.getClass().getSimpleName()=" + view.getClass().getSimpleName() + "-->getParent=" + parent.getParent().getClass().getSimpleName());
         outRect.left = outRect.right = outRect.bottom = mSpace;
 
         int position = parent.getChildAdapterPosition(view);
@@ -31,14 +52,16 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
 
         if(spanIndex == 1 && position > 0) {
             //outRect.left = mSpace;
-            Log.e("SpacesItemDecoration", "-->(align on right)position=" + position);
+            Log.e(TAG, "-->(align on right)position=" + position);
             vh.mTxtRobert.setVisibility(View.GONE);
             vh.mTxtHoang.setVisibility(View.VISIBLE);
+            mAlignmentDetectListener.readyUpdate(position, spanIndex, ALIGNMENT.RIGHT);
         } else {
             //outRect.right = 100*mSpace;
-            Log.e("SpacesItemDecoration", "<--(align on left)position=" + position);
+            Log.e(TAG, "<--(align on left)position=" + position);
             vh.mTxtHoang.setVisibility(View.GONE);
             vh.mTxtRobert.setVisibility(View.VISIBLE);
+            mAlignmentDetectListener.readyUpdate(position, spanIndex, ALIGNMENT.LEFT);
         }
         //outRect.bottom = mSpace * 2;
 

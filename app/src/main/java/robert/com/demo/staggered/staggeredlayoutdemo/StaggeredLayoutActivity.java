@@ -13,20 +13,23 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.RelativeLayout;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-public class StaggeredLayoutActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
-
+public class StaggeredLayoutActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, SpacesItemDecoration.AlignmentDetect {
+    private String TAG = "StaggeredLayoutActivity";
     private Context mContext;
     private RelativeLayout mRelativeLayout;
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private StaggeredAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private int[] mHeight = null;
+    //private int[] mHeight = null;
+    List<StaggeredEntity> mData = new ArrayList<>();
     private Random mRandom = new Random();
     // Initialize a new String array
-    String[] items = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "15" };
+    //String[] items = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "15" };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +52,9 @@ public class StaggeredLayoutActivity extends AppCompatActivity implements SwipeR
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
-        mHeight = new int[items.length];
+        //mHeight = new int[items.length];
 
-        refreshHeight(items.length);
+        initData(99);
 
         /*
             StaggeredGridLayoutManager
@@ -77,12 +80,12 @@ public class StaggeredLayoutActivity extends AppCompatActivity implements SwipeR
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Initialize a new instance of RecyclerView Adapter instance
-        mAdapter = new StaggeredAdapter(mContext, items, mHeight);
+        mAdapter = new StaggeredAdapter(this, mData);
 
         // Set the adapter for RecyclerView
         mRecyclerView.setAdapter(mAdapter);
 
-        SpacesItemDecoration decoration = new SpacesItemDecoration(1);
+        SpacesItemDecoration decoration = new SpacesItemDecoration(1, this);
         mRecyclerView.addItemDecoration(decoration);
 
         mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -96,17 +99,26 @@ public class StaggeredLayoutActivity extends AppCompatActivity implements SwipeR
         @Override
         public void onLayoutChildren(final RecyclerView.Recycler recycler, final RecyclerView.State state) {
             super.onLayoutChildren(recycler, state);
-
-            Log.e("StaggeredLayoutActivity", "-->state.toString=" + state.toString());
         }
     };
 
-    private void refreshHeight(int length) {
-        if (mHeight == null) mHeight = new int[length];
-
-        for(int idx = 0; idx < mHeight.length; idx++) {
-            mHeight[idx] = getRandomIntInRange(250, 75);
+    private void initData(int length) {
+        for(int idx = 0; idx < length; idx++) {
+            mData.add(idx, new StaggeredEntity(SpacesItemDecoration.ALIGNMENT.LEFT, 0, getRandomIntInRange(250, 75), false));
         }
+
+    }
+
+    private void refreshHeight(/*int length*/) {
+        //if (mHeight == null) mHeight = new int[length];
+
+        //for(int idx = 0; idx < mHeight.length; idx++) {
+        //    mHeight[idx] = getRandomIntInRange(250, 75);
+        //}
+        for(int idx = 0; idx < mData.size(); idx++) {
+            mData.get(idx).height = getRandomIntInRange(250, 75);
+        }
+
     }
 
     // Custom method to get a random number between a range
@@ -116,8 +128,14 @@ public class StaggeredLayoutActivity extends AppCompatActivity implements SwipeR
 
     @Override
     public void onRefresh() {
-        refreshHeight(items.length);
+        refreshHeight();
         mAdapter.notifyDataSetChanged();
         mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void readyUpdate(int position, int spanIndex, SpacesItemDecoration.ALIGNMENT alignment) {
+        Log.e(TAG, "readyUpdate().position=" + position + "|spanIndex=" + spanIndex + "|alignment=" + alignment);
+        mAdapter.update(position, spanIndex, alignment);
     }
 }
