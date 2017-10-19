@@ -34,12 +34,14 @@ public class StaggeredAdapter extends RecyclerView.Adapter<StaggeredAdapter.View
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView mTextView;
+        public TextView mTxtRobert;
+        public TextView mTxtHoang;
         public CardView mCardView;
 
         public ViewHolder(View v) {
             super(v);
-            mTextView = (TextView) v.findViewById(R.id.tv);
+            mTxtRobert = (TextView) v.findViewById(R.id.robert);
+            mTxtHoang = (TextView) v.findViewById(R.id.hoang);
             mCardView = (CardView) v.findViewById(R.id.card_view);
         }
     }
@@ -56,13 +58,14 @@ public class StaggeredAdapter extends RecyclerView.Adapter<StaggeredAdapter.View
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         // Set a random height for TextView
-        holder.mTextView.getLayoutParams().height = mHeight[position];//getRandomIntInRange(250, 75);
+        holder.mCardView.getLayoutParams().height = mHeight[position];//getRandomIntInRange(250, 75);
         // Set a random color for TextView background
-        holder.mTextView.setBackgroundColor(getRandomHSVColor());
+        holder.mCardView.setBackgroundColor(getRandomHSVColor());
 
-        holder.mTextView.setText(mDataSet[position] + "|pos=" + position + "|AdapterPos="
+        Log.i("StaggeredAdapter", mDataSet[position] + "|pos=" + position + "|AdapterPos="
                 + holder.getAdapterPosition() + "|LayoutPos=" + holder.getLayoutPosition()
                 + "|ItemId=" + holder.getItemId());
+
         final ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
         if (lp instanceof StaggeredGridLayoutManager.LayoutParams) {
             StaggeredGridLayoutManager.LayoutParams sglp = (StaggeredGridLayoutManager.LayoutParams) lp;

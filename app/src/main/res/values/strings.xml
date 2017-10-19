@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">StaggeredLayoutDemo</string>
+    <string name="robert">LEFT</string>
+    <string name="hoang">RIGHT</string>
 </resources>

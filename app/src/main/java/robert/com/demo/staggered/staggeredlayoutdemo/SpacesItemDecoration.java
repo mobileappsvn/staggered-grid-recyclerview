@@ -20,6 +20,7 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
 
         Log.e("SpacesItemDecoration", "-->view.getClass().getSimpleName()=" + view.getClass().getSimpleName() + "-->getParent=" + parent.getParent().getClass().getSimpleName());
+        outRect.left = outRect.right = outRect.bottom = mSpace;
 
         int position = parent.getChildAdapterPosition(view);
 
@@ -28,18 +29,18 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
         StaggeredGridLayoutManager.LayoutParams lp = (StaggeredGridLayoutManager.LayoutParams)view .getLayoutParams();
         int spanIndex = lp.getSpanIndex();
 
-        if(position > 0){
-            if(spanIndex == 1) {
-                outRect.left = mSpace;
-                Log.e("SpacesItemDecoration", "-->(align on right)position=" + position);
-                vh.mTextView.setText("RIGHT");
-            } else{
-                outRect.right = 100*mSpace;
-                Log.e("SpacesItemDecoration", "<--(align on left)position=" + position);
-                vh.mTextView.setText("LEFT");
-            }
-
-            outRect.bottom = mSpace * 2;
+        if(spanIndex == 1 && position > 0) {
+            //outRect.left = mSpace;
+            Log.e("SpacesItemDecoration", "-->(align on right)position=" + position);
+            vh.mTxtRobert.setVisibility(View.GONE);
+            vh.mTxtHoang.setVisibility(View.VISIBLE);
+        } else {
+            //outRect.right = 100*mSpace;
+            Log.e("SpacesItemDecoration", "<--(align on left)position=" + position);
+            vh.mTxtHoang.setVisibility(View.GONE);
+            vh.mTxtRobert.setVisibility(View.VISIBLE);
         }
+        //outRect.bottom = mSpace * 2;
+
     }
 }

@@ -26,9 +26,7 @@ public class StaggeredLayoutActivity extends AppCompatActivity implements SwipeR
     private int[] mHeight = null;
     private Random mRandom = new Random();
     // Initialize a new String array
-    String[] items = {
-            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "15"
-    };
+    String[] items = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "15" };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
